@@ -16,6 +16,7 @@ import {
   saveQuoteInputSchema,
   saveReadingRecordInputSchema,
   updateQuoteNoteInputSchema,
+  writeSharedPageClearThoughtsInputSchema,
   saveReactionInputSchema,
   sendCurrentContextInputSchema,
   setLiveReadingModeInputSchema,
@@ -39,6 +40,7 @@ import { toolResult } from "./tool-result.js";
 // previous connection can still fetch its template after a later app release.
 export const READING_NEST_URI = READING_NEST_RESOURCE_URI;
 export const READING_NEST_LEGACY_URIS = [
+  "ui://ss-reading-nest/app-v87-valid-visible-template.html",
   "ui://ss-reading-nest/app-v86-cloud-body-restore.html",
   "ui://ss-reading-nest/app-v85-neutral-naming.html",
   "ui://ss-reading-nest/app-v84-ios-result-binding.html",
@@ -136,9 +138,16 @@ export const TOOL_CONFIGS = {
   read_shared_page_context: {
     title: "共读当前书页与优理氏的想法",
     description:
-      "必须在用户要求共读当前页时调用。触发语包括：和_共读、读这一页、刚读完第几页、看看这一页、读取我保存的想法、聊聊当前内容。即使阅读组件已经打开，也要立即调用本工具读取当前页正文和优理氏保存的想法；不要等待组件再次推送，不要声称拿不到内容。读取后直接回应优理氏的想法，不要复述或概括整页，也不要逐条转抄想法。",
+      "必须在用户要求共读当前页时调用。触发语包括：和_共读、读这一页、刚读完第几页、看看这一页、读取我保存的想法、聊聊当前内容。即使阅读组件已经打开，也要立即调用本工具读取当前页正文和优理氏保存的想法；不要等待组件再次推送，不要声称拿不到内容。读取后直接回应优理氏的想法，不要复述或概括整页，也不要逐条转抄想法。对有意绪且需要回应的记录，生成用户可见回复后必须调用 write_shared_page_clear_thoughts，把同一份回复写入清思。",
     inputSchema: readSharedPageContextInputSchema,
     annotations: readOnly
+  },
+  write_shared_page_clear_thoughts: {
+    title: "把共读回复写入清思",
+    description:
+      "Use immediately after responding to saved thoughts returned by read_shared_page_context. Save only the final user-visible reply for each quote; never save hidden reasoning or claim success before this tool confirms it.",
+    inputSchema: writeSharedPageClearThoughtsInputSchema,
+    annotations: { ...mutation, idempotentHint: true }
   },
   get_novel_bookshelf: {
     title: "读取小说书架",
@@ -344,6 +353,7 @@ function createLightweightToolConfigs() {
       name,
       name === "open_reading_nest" ||
       name === "read_shared_page_context" ||
+      name === "write_shared_page_clear_thoughts" ||
       name === "check_reading_nest_app_compatibility"
         ? config
         : {
@@ -428,6 +438,7 @@ export function registerReadingTools(
             Boolean(quote.note?.trim() || quote.clearThought?.trim())
         )
         .map((quote) => ({
+          quoteId: quote.id,
           quote: quote.content,
           ...(quote.note?.trim() ? { thought: quote.note.trim() } : {}),
           ...(quote.clearThought?.trim()
@@ -467,12 +478,43 @@ export function registerReadingTools(
             prioritizeUserThoughts: true,
             doNotRepeatFullPage: true,
             doNotTranscribeThoughts: true,
-            style: "natural-conversation"
+            style: "natural-conversation",
+            writeBackTool: "write_shared_page_clear_thoughts",
+            writeBackRequired: savedThoughts.some((thought) => Boolean(thought.thought))
           }
         },
         savedThoughts.length
-          ? `已读取《${bundle.session.title}》当前页和 ${savedThoughts.length} 条想法。请直接回应用户的想法，不要复述正文或逐条转抄。`
+          ? `已读取《${bundle.session.title}》当前页和 ${savedThoughts.length} 条想法。请直接回应用户的想法，不要复述正文或逐条转抄；生成回复后调用 write_shared_page_clear_thoughts 写入对应清思。`
           : `已读取《${bundle.session.title}》当前页。请直接聊天，不要复述或概括整页。`
+      );
+    }
+  );
+
+  server.registerTool(
+    "write_shared_page_clear_thoughts",
+    toolConfigs.write_shared_page_clear_thoughts,
+    async ({ sessionId, replies }) => {
+      const bundle = await service.getSessionBundle(sessionId);
+      const availableQuoteIds = new Set(bundle.quotes.map((quote) => quote.id));
+      for (const reply of replies) {
+        if (!availableQuoteIds.has(reply.quoteId)) {
+          throw new Error("要写入清思的划线记录不存在或不属于当前作品。");
+        }
+      }
+
+      const quotes = [];
+      for (const reply of replies) {
+        quotes.push(
+          await service.updateQuoteNote({
+            sessionId,
+            quoteId: reply.quoteId,
+            clearThought: reply.clearThought
+          })
+        );
+      }
+      return toolResult(
+        { saved: true, sessionId, quotes },
+        `已把 ${quotes.length} 条共读回复写入清思。`
       );
     }
   );

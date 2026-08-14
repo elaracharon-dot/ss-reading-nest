@@ -240,6 +240,22 @@ export const updateQuoteNoteInputSchema = z
   .refine((input) => input.note !== undefined || input.clearThought !== undefined, {
     message: "note or clearThought is required"
   });
+export const writeSharedPageClearThoughtsInputSchema = z
+  .object({
+    sessionId: sessionIdSchema,
+    replies: z
+      .array(
+        z
+          .object({
+            quoteId: z.string().min(1),
+            clearThought: z.string().trim().min(1).max(12_000)
+          })
+          .strict()
+      )
+      .min(1)
+      .max(20)
+  })
+  .strict();
 export const deleteQuoteInputSchema = z
   .object({
     sessionId: sessionIdSchema,

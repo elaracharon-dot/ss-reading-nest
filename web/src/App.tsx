@@ -193,6 +193,7 @@ export function App() {
     restoredWidgetState?.collapsed ?? false
   );
   const [syncRequestInFlight, setSyncRequestInFlight] = useState(false);
+  const [clearThoughtRefreshUntil, setClearThoughtRefreshUntil] = useState(0);
   const [managedBook, setManagedBook] = useState<BookshelfItem | null>(null);
   const [syncChoiceOpen, setSyncChoiceOpen] = useState(false);
   const [syncJob, setSyncJob] = useState<ReadingSyncJob | null>(null);
@@ -305,6 +306,55 @@ export function App() {
       setReadingRecords(sortReadingRecords(openOutput.readingRecords));
     }
   }, [openOutput?.readingRecords]);
+
+  useEffect(() => {
+    if (
+      screen !== "novel" ||
+      !sessionBundle ||
+      clearThoughtRefreshUntil <= Date.now()
+    ) {
+      return;
+    }
+    const sessionId = sessionBundle.session.id;
+    let cancelled = false;
+
+    const refreshClearThoughts = async () => {
+      if (Date.now() >= clearThoughtRefreshUntil) {
+        setClearThoughtRefreshUntil(0);
+        return;
+      }
+      const result = await callTool("get_novel_bookshelf", {}).catch(() => undefined);
+      if (cancelled || !result || "unavailable" in result) return;
+      const latest = Array.isArray(result.structuredContent?.bookshelfSessions)
+        ? (result.structuredContent.bookshelfSessions as SessionBundle[]).find(
+            (candidate) => candidate.session.id === sessionId
+          )
+        : undefined;
+      if (!latest) return;
+
+      setSessionBundle((current) =>
+        current?.session.id === sessionId ? latest : current
+      );
+      setRecent((items) =>
+        items.map((item) =>
+          item.session.id === sessionId
+            ? { ...latest, sourceAvailability: item.sourceAvailability }
+            : item
+        )
+      );
+      const stillWaiting = latest.quotes.some(
+        (quote) => Boolean(quote.note?.trim()) && !quote.clearThought?.trim()
+      );
+      if (!stillWaiting) setClearThoughtRefreshUntil(0);
+    };
+
+    void refreshClearThoughts();
+    const timer = window.setInterval(() => void refreshClearThoughts(), 2_500);
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+    };
+  }, [clearThoughtRefreshUntil, screen, sessionBundle?.session.id]);
 
   useEffect(() => {
     if (screen !== "novel" || !sessionBundle) return;
@@ -1303,7 +1353,7 @@ export function App() {
     const prompt = [
       `我刚读完《${sessionBundle.session.title}》的第 ${currentPosition.index} 页，想和你一起聊聊。`,
       savedThoughts
-        ? "请先读取我刚分享的这一页和保存的想法，直接回应我的想法，再聊你最有共鸣的 1-2 个点。"
+        ? "请先调用 read_shared_page_context 读取这一页和带 quoteId 的保存想法，直接回应我的想法，再聊你最有共鸣的 1-2 个点。回应完成后，调用 write_shared_page_clear_thoughts，把对应的用户可见回复写入每条清思。"
         : "请先读取我刚分享的这一页，挑最有意思的 1-3 个点自然地和我聊。",
       "不要复述正文、逐条转抄想法，也不要概括前面的内容。"
     ].join("\n");
@@ -1340,6 +1390,7 @@ export function App() {
         sendMessage: askChatGpt,
         scrollToBottom: true
       });
+      if (savedThoughts) setClearThoughtRefreshUntil(Date.now() + 120_000);
       setToast("这一页和你的想法已经发给_。你可以继续往下读。");
     } finally {
       setSyncRequestInFlight(false);
@@ -1354,7 +1405,7 @@ export function App() {
     const prompt = [
       `【只问这一句】我在《${sessionBundle.session.title}》第 ${currentPosition.index} 页划了一句话。`,
       `我的问题：${question.trim()}`,
-      "请只围绕这句划线和这个问题回答，不要概括整页，也不要分析没有选中的内容。"
+      "请先调用 read_shared_page_context 取得对应 quoteId，只围绕这句划线和这个问题回答，不要概括整页，也不要分析没有选中的内容。回答后调用 write_shared_page_clear_thoughts，把这份用户可见回答写入对应清思。"
     ].join("\n");
     setSyncRequestInFlight(true);
     try {
@@ -1388,6 +1439,7 @@ export function App() {
         sendMessage: askChatGpt,
         scrollToBottom: true
       });
+      setClearThoughtRefreshUntil(Date.now() + 120_000);
       setToast("只把这句和你的问题发给了_。");
     } finally {
       setSyncRequestInFlight(false);

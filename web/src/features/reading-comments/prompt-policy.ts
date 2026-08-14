@@ -39,9 +39,8 @@ export function buildReadingCommentPrompt(input: {
   ];
   const modeInstructions = modeInstruction(input.mode);
   const publication = [
-    "本次小书房不会自动把共读回应保存到书内。",
-    "不要调用任何应用写回工具；直接在聊天区回复即可。",
-    "不要说共读回应已保存，也不要显示同步诊断，因为本次没有尝试写回。"
+    "如果本轮通过 read_shared_page_context 读取到了带 quoteId 的保存想法，请在生成用户可见回复后调用 write_shared_page_clear_thoughts，将对应回复写入清思。",
+    "清思只保存用户可见的最终回复，不保存隐藏推理；只有写入工具确认成功后才能说已经保存。"
   ];
   return [...intro, ...modeInstructions, ...publication].join("\n\n");
 }
@@ -55,8 +54,8 @@ export function buildLiveReadingPrompt(input: {
   requestedLength?: CommentLength;
 }): string {
   const publication = [
-    "本次小书房不会自动把共读回应保存到书内。",
-    "不要调用任何应用写回工具；直接在聊天区回复即可。"
+    "如果本轮读取到了带 quoteId 的保存想法，请在回复后调用 write_shared_page_clear_thoughts 写入清思。",
+    "清思只保存用户可见的最终回复，不保存隐藏推理。"
   ];
   return [
     `【实时陪读：${input.position.label}】《${input.title}》`,
