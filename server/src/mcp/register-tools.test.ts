@@ -11,7 +11,7 @@ describe("tool descriptors", () => {
   it("routes Chinese co-reading requests to the private page-context reader", () => {
     expect(TOOL_CONFIGS.read_shared_page_context.title).toContain("共读当前书页");
     expect(TOOL_CONFIGS.read_shared_page_context.description).toMatch(
-      /必须.*调用.*和星星共读.*读取我保存的想法.*不要等待/s
+      /必须.*调用.*和_共读.*读取我保存的想法.*不要等待/s
     );
   });
 
@@ -275,9 +275,8 @@ describe("tool descriptors", () => {
       ]
     });
     expect(result._meta?.privateBookshelf).not.toHaveProperty("readingRecords");
-    expect(result._meta).not.toHaveProperty("ui");
-    expect(result._meta).not.toHaveProperty("ui/resourceUri");
-    expect(result._meta).not.toHaveProperty("openai/outputTemplate");
+    expect(result._meta?.ui).toEqual({ resourceUri: READING_NEST_URI });
+    expect(result._meta?.["openai/outputTemplate"]).toBe(READING_NEST_URI);
     expect(JSON.stringify(result)).not.toMatch(
       /sourceText|bytesBase64|data:image|objectKey|manifestObjectKey|private\/sources\//
     );

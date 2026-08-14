@@ -9,7 +9,7 @@ import {
 } from "./register-tools.js";
 
 const READING_NEST_DESCRIPTION =
-  "一个温暖的移动端共读小窝，用于阅读用户自己粘贴或导入的小说文本。";
+  "一个移动端共读工具，用于阅读用户自己粘贴或导入的小说文本。";
 
 type ReadingResourceBootstrap = Record<string, unknown>;
 type ReadingResourceBootstrapLoader = () => Promise<ReadingResourceBootstrap>;
@@ -81,7 +81,7 @@ export function registerReadingResource(
       "信息库",
       uri,
       {
-        description: "移动端优先的小说共读小窝",
+        description: "移动端优先的小说共读工具",
         _meta: resourceMeta
       },
       async () => {

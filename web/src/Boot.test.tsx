@@ -14,9 +14,9 @@ describe("Boot", () => {
   });
 
   it("loads the app module when boot succeeds", async () => {
-    render(<Boot loadApp={async () => ({ App: () => <main>小窝首页</main> })} />);
+    render(<Boot loadApp={async () => ({ App: () => <main>首页</main> })} />);
 
-    expect(await screen.findByText("小窝首页")).toBeInTheDocument();
+    expect(await screen.findByText("首页")).toBeInTheDocument();
   });
 
   it("shows sanitized diagnostics when the app module fails to load", async () => {

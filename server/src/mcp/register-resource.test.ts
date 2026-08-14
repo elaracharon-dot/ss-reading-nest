@@ -40,10 +40,12 @@ describe("registerReadingResource", () => {
       registerAppResource.mock.calls[1 + READING_NEST_LEGACY_URIS.length];
 
     expect(READING_NEST_URI).toBe(
-      "ui://ss-reading-nest/app-v83-industrial-red.html"
+      "ui://ss-reading-nest/app-v85-neutral-naming.html"
     );
     expect(READING_NEST_LEGACY_URIS).toEqual(
       expect.arrayContaining([
+        "ui://ss-reading-nest/app-v84-ios-result-binding.html",
+        "ui://ss-reading-nest/app-v83-industrial-red.html",
         "ui://ss-reading-nest/app-v76-ios-remount.html",
         "ui://ss-reading-nest/app-v69-mobile-cover-recovery.html",
         "ui://ss-reading-nest/app-v68-pip-client-compat.html",
@@ -61,7 +63,7 @@ describe("registerReadingResource", () => {
     expect(registerAppResource).toHaveBeenCalledTimes(
       1 + READING_NEST_LEGACY_URIS.length + 1 + READING_NEST_COMPATIBILITY_LEGACY_URIS.length
     );
-    expect(uri).toBe("ui://ss-reading-nest/app-v83-industrial-red.html");
+    expect(uri).toBe("ui://ss-reading-nest/app-v85-neutral-naming.html");
     expect(legacyUri).toBe(READING_NEST_LEGACY_URIS[0]);
     expect(descriptor._meta.ui.csp.connectDomains).toContain(
       "https://reading-nest.example.workers.dev"
@@ -72,7 +74,7 @@ describe("registerReadingResource", () => {
 
     const loaded = await loader();
     expect(loaded.contents[0].uri).toBe(
-      "ui://ss-reading-nest/app-v83-industrial-red.html"
+      "ui://ss-reading-nest/app-v85-neutral-naming.html"
     );
     expect(loaded.contents[0].mimeType).toBe("text/html;profile=mcp-app");
     expect(loaded.contents[0]._meta.ui.csp.connectDomains).toContain(

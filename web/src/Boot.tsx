@@ -142,7 +142,7 @@ export function BootDiagnostics({
   return (
     <main className="boot-diagnostics" role="alert" aria-live="polite">
       <strong>小书房加载诊断</strong>
-      <p>组件还没有正常显示。请刷新小窝；如果仍是空白，把这块信息截图给 Codex。</p>
+      <p>组件还没有正常显示。请刷新；如果仍是空白，把这块信息截图给 Codex。</p>
       <dl>
         <div>
           <dt>resourceVersion</dt>
