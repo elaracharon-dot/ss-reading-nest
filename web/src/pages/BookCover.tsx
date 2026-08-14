@@ -44,7 +44,7 @@ const ARCHIVE_COPY: Record<
   clarity: {
     label: "清思",
     measure: "记",
-    description: "你从星星回复里保存下来的片段"
+    description: "你从_回复里保存下来的片段"
   },
   minutes: {
     label: "纪要",
@@ -306,12 +306,12 @@ export function buildBookArchive(item: BookshelfItem): Record<ArchiveKind, Archi
     const note = quote.note?.trim();
     if (!note) continue;
     const normalizedContent = quote.content.trim();
-    if (/^星星(?:短评|清思)[：:]/.test(normalizedContent)) {
+    if (/^_(?:短评|清思)[：:]/.test(normalizedContent)) {
       archive.clarity.push({
         id: quote.id,
         deleteTarget: { source: "quote", recordId: quote.id },
         kind: "clarity",
-        title: stripPrefix(normalizedContent, /^星星(?:短评|清思)[：:]\s*/),
+        title: stripPrefix(normalizedContent, /^_(?:短评|清思)[：:]\s*/),
         body: note,
         position: quote.position
       });

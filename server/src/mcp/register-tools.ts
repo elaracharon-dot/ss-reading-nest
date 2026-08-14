@@ -39,6 +39,7 @@ import { toolResult } from "./tool-result.js";
 // previous connection can still fetch its template after a later app release.
 export const READING_NEST_URI = READING_NEST_RESOURCE_URI;
 export const READING_NEST_LEGACY_URIS = [
+  "ui://ss-reading-nest/app-v84-ios-result-binding.html",
   "ui://ss-reading-nest/app-v83-industrial-red.html",
   "ui://ss-reading-nest/app-v78-context-fallback-remount.html",
   "ui://ss-reading-nest/app-v76-ios-remount.html",
@@ -126,14 +127,14 @@ export const TOOL_CONFIGS = {
       ui: { resourceUri: READING_NEST_URI },
       "openai/outputTemplate": READING_NEST_URI,
       "openai/widgetAccessible": true,
-      "openai/toolInvocation/invoking": "正在点亮小窝…",
-      "openai/toolInvocation/invoked": "小窝已经准备好"
+      "openai/toolInvocation/invoking": "正在打开信息库…",
+      "openai/toolInvocation/invoked": "信息库已经准备好"
     }
   },
   read_shared_page_context: {
-    title: "共读当前书页与冰冰的想法",
+    title: "共读当前书页与优理氏的想法",
     description:
-      "必须在用户要求共读当前页时调用。触发语包括：和星星共读、读这一页、刚读完第几页、看看这一页、读取我保存的想法、聊聊当前内容。即使阅读组件已经打开，也要立即调用本工具读取当前页正文和冰冰保存的想法；不要等待组件再次推送，不要声称拿不到内容。读取后直接回应冰冰的想法，不要复述或概括整页，也不要逐条转抄想法。",
+      "必须在用户要求共读当前页时调用。触发语包括：和_共读、读这一页、刚读完第几页、看看这一页、读取我保存的想法、聊聊当前内容。即使阅读组件已经打开，也要立即调用本工具读取当前页正文和优理氏保存的想法；不要等待组件再次推送，不要声称拿不到内容。读取后直接回应优理氏的想法，不要复述或概括整页，也不要逐条转抄想法。",
     inputSchema: readSharedPageContextInputSchema,
     annotations: readOnly
   },
@@ -177,7 +178,7 @@ export const TOOL_CONFIGS = {
     _meta: appOnlyToolMeta
   },
   confirm_assistant_synced_position: {
-    title: "确认星星已读位置",
+    title: "确认_已读位置",
     description:
       "Use this only after the user explicitly confirms that ChatGPT replied it has read through a batch end.",
     inputSchema: confirmAssistantSyncedPositionInputSchema,
@@ -332,7 +333,7 @@ export const TOOL_CONFIGS = {
     _meta: widgetCallableToolMeta
   },
   generate_diary_context: {
-    title: "生成小窝日记素材",
+    title: "生成日记素材",
     description: "Use this when the user wants ChatGPT to write today's copyable reading diary.",
     inputSchema: generateDiaryContextInputSchema,
     annotations: readOnly,
@@ -537,7 +538,7 @@ export function registerReadingTools(
           confirmedBatchId: input.batchId,
           updatedAt: session.updatedAt
         },
-        `已由用户确认星星读到${input.confirmedPosition.label}。`
+        `已由用户确认_读到${input.confirmedPosition.label}。`
       );
     }
   );
@@ -703,7 +704,7 @@ export function registerReadingTools(
 
   server.registerTool("save_quote", toolConfigs.save_quote, async (input) => {
     const quote = await service.saveQuote(input);
-    return toolResult({ saved: true, quote }, "摘录已经放进小窝。");
+    return toolResult({ saved: true, quote }, "摘录已经放进记录。");
   });
 
   server.registerTool("update_quote_note", toolConfigs.update_quote_note, async (input) => {
@@ -811,7 +812,7 @@ export function registerReadingTools(
       const diaryContext = await service.diaryContext(sessionId);
       return toolResult(
         { diaryContext },
-        "日记素材已经整理好。请在聊天里把这些素材写成一篇可复制的小窝日记。"
+        "日记素材已经整理好。请在聊天里把这些素材写成一篇可复制的日记。"
       );
     }
   );

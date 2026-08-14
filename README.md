@@ -1,4 +1,4 @@
-# SxS Reading Nest / 小窝共读
+# SxS Reading Nest / 共读
 
 一个运行在 ChatGPT 中的移动端优先私人阅读器。它把多书书架、阅读进度、划线想法、书签和“与 AI 共读当前页”连接在同一个 MCP App 中。
 
