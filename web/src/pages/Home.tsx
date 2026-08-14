@@ -25,7 +25,7 @@ export type BookshelfItem = SessionBundle & {
 
 type Filter = "all" | "active" | "completed" | "missing";
 type LibraryView = "library" | "records";
-export type LibrarySkin = "blue" | "pink" | "beige" | "green";
+export type LibrarySkin = "brutal" | "blue" | "pink" | "beige" | "green";
 
 type ReadingRecordView = {
   id: string;
@@ -124,13 +124,13 @@ export function Home(props: {
         }
       : {
           title: "我的书房",
-          subtitle: "挑一本书，回到上次停下的地方。"
+          subtitle: "但愿你的视觉时时更新。智者，就是对一切咸到惊奇的人。"
         };
 
   return (
     <main className="library-app-shell">
-      <aside className="library-rail" aria-label="小书房导航">
-        <strong>冰冰和星星的小书房</strong>
+      <aside className="library-rail" aria-label="信息库导航">
+        <strong>信息库</strong>
         <nav>
           {LIBRARY_NAV.map((item) => {
             const Icon = item.icon;
@@ -153,8 +153,8 @@ export function Home(props: {
       <section className="home-shell">
         <header className="library-header">
           <div>
-            <span className="visually-hidden">冰冰和星星的小书房</span>
-            <span className="library-kicker">冰冰和星星的小书房</span>
+            <span className="visually-hidden">信息库</span>
+            <span className="library-kicker">信息库</span>
             <h1>{headerCopy.title}</h1>
             <p>{headerCopy.subtitle}</p>
           </div>
@@ -169,18 +169,25 @@ export function Home(props: {
               <button
                 type="button"
                 className="library-add"
-                aria-label="小说共读：导入小说"
+                aria-label="小说共读：导入书籍"
                 onClick={props.onNew}
               >
                 <Plus className="library-action-icon" aria-hidden="true" strokeWidth={1.9} />
-                <span>导入小说</span>
+                <span>导入书籍</span>
               </button>
             </div>
           ) : null}
         </header>
 
         <div className="library-skin-switch" aria-label="界面皮肤">
-          <span>换肤</span>
+          <span>PALETTE</span>
+          <button
+            type="button"
+            aria-pressed={props.skin === "brutal"}
+            onClick={() => props.onSkinChange("brutal")}
+          >
+            粗野灰
+          </button>
           <button
             type="button"
             aria-pressed={props.skin === "blue"}

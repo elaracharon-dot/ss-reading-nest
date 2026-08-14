@@ -26,7 +26,7 @@ describe("App", () => {
 
   it("shows the novel-only reading entry and bookshelf section", () => {
     render(<App />);
-    expect(screen.getAllByText("冰冰和星星的小书房").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("信息库").length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: /小说共读/ })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "书架" })).toBeInTheDocument();
   });

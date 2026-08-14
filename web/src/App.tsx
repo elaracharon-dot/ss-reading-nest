@@ -2405,6 +2405,7 @@ function readLibrarySkin(): LibrarySkin {
     const stored = window.localStorage.getItem(LIBRARY_SKIN_STORAGE_KEY);
     if (
       stored === "blue" ||
+      stored === "brutal" ||
       stored === "pink" ||
       stored === "beige" ||
       stored === "green"
@@ -2414,7 +2415,7 @@ function readLibrarySkin(): LibrarySkin {
   } catch {
     // Storage is optional inside embedded hosts.
   }
-  return "blue";
+  return "brutal";
 }
 
 function formatPageThoughts(quotes: Quote[]) {

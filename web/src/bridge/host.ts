@@ -80,7 +80,7 @@ function connectApp() {
   if (!app) {
     try {
       const nextApp = new McpApp({
-        name: "冰冰和星星的小书房",
+        name: "信息库",
         version: READING_NEST_APP_VERSION
       });
       // This must be registered before connect(); the host can deliver the opening

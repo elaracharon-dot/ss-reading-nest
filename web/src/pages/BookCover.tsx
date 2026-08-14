@@ -107,7 +107,7 @@ export function BookCover(props: {
         <button type="button" className="cover-back" onClick={props.onBack} aria-label="返回书架">
           <ArrowLeft className="cover-toolbar-icon" aria-hidden="true" strokeWidth={1.8} />
         </button>
-        <span>冰冰和星星的小书房</span>
+        <span>信息库</span>
         {availableKinds.length > 0 ? (
           <button
             type="button"
@@ -135,7 +135,7 @@ export function BookCover(props: {
             }
           >
             <span className="cover-book-edge" aria-hidden="true" />
-            <span className="cover-book-kicker">冰冰和星星的小书房</span>
+            <span className="cover-book-kicker">信息库</span>
             <strong title={fullTitle}>{displayTitle}</strong>
             <span className="cover-book-rule" aria-hidden="true" />
             <small>{props.item.session.status === "completed" ? "阅毕" : "正在共读"}</small>
