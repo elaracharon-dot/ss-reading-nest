@@ -117,7 +117,7 @@ const readSharedPageContextInputSchema = z
 
 export const TOOL_CONFIGS = {
   open_reading_nest: {
-    title: "打开 冰冰和星星的小书房",
+    title: "打开信息库",
     description: "Use this when the user wants to open the reading nest or continue recent reading.",
     inputSchema: openReadingNestInputSchema,
     annotations: readOnly,
@@ -144,9 +144,9 @@ export const TOOL_CONFIGS = {
     _meta: appOnlyToolMeta
   },
   check_reading_nest_app_compatibility: {
-    title: "检查 冰冰和星星的小书房 App 兼容性",
+    title: "检查信息库 App 兼容性",
     description:
-      "Use this only to verify whether the current ChatGPT client can render a minimal 冰冰和星星的小书房 App component. It does not read or modify any book data.",
+      "Use this only to verify whether the current ChatGPT client can render a minimal 信息库 App component. It does not read or modify any book data.",
     inputSchema: z.object({}),
     annotations: readOnly,
     _meta: {
@@ -385,7 +385,7 @@ export function registerReadingTools(
     return {
       ...toolResult(
         summarizeNovelBookshelfForModel(bookshelf.bookshelfSessions),
-        "已打开 冰冰和星星的小书房。完整书架只显示在阅读组件内。后续如果冰冰要求共读、讨论当前页或读取已保存的想法，必须立即调用 read_shared_page_context；不要等待阅读组件再次推送内容。"
+        "已打开信息库。完整书架只显示在阅读组件内。后续如果用户要求共读、讨论当前页或读取已保存的想法，必须立即调用 read_shared_page_context；不要等待阅读组件再次推送内容。"
       ),
       _meta: { privateBookshelf: bookshelf }
     };
