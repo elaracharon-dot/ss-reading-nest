@@ -80,10 +80,10 @@ describe("reading-sync messages", () => {
     expect(current).toContain("1-5 句");
     expect(recent).toContain("最近原文");
     expect(recent).toContain("后续走向");
-    expect(current).toContain("直接在聊天区回复即可");
-    expect(recent).toContain("直接在聊天区回复即可");
-    expect(current).toContain("不要调用任何应用写回工具");
-    expect(recent).toContain("不要调用任何应用写回工具");
+    expect(current).toContain("write_shared_page_clear_thoughts");
+    expect(recent).toContain("write_shared_page_clear_thoughts");
+    expect(current).toContain("用户可见的最终回复");
+    expect(recent).toContain("用户可见的最终回复");
     // User/AI-visible text must use 「页」, not the old 「段」 unit label.
     expect(current).toContain("【只看当前页：第 8 页】");
     expect(recent).toContain("【补最近几页：第 4–8 页】");

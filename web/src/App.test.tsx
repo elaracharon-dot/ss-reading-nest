@@ -930,7 +930,7 @@ describe("App", () => {
     });
   });
 
-  it("sends the explicit page reply to ChatGPT without asking for a tool writeback", async () => {
+  it("sends a page without saved thoughts without requesting a clear-thought writeback", async () => {
     const callTool = vi.fn(async (name: string, args: Record<string, any>) => {
       if (name === "start_reading_session") {
         return {
@@ -1022,7 +1022,7 @@ describe("App", () => {
       expect.objectContaining({ sessionId: "session-no-dock" })
     );
     const prompt = String(sendFollowUpMessage.mock.calls[0]?.[0]?.prompt ?? "");
-    expect(prompt).not.toContain("publish_companion_comment");
+    expect(prompt).not.toContain("write_shared_page_clear_thoughts");
     expect(prompt).not.toContain("session-no-dock");
     expect(prompt).toContain("想和你一起聊聊");
   });
@@ -2038,6 +2038,8 @@ describe("App", () => {
     expect(prompt).toContain("这是我真正划线的句子");
     expect(prompt).toContain("我觉得这里说中了行动比等待更重要。");
     expect(prompt).toContain("兼容模式共读资料");
+    expect(prompt).toContain("read_shared_page_context");
+    expect(prompt).toContain("write_shared_page_clear_thoughts");
     expect(prompt).not.toContain("这是整页正文，不应该在已有想法时全部塞进兼容消息。");
     await deviceCache.remove(bundle.session.id);
   });
@@ -2118,7 +2120,8 @@ describe("App", () => {
     const prompt = String(sendFollowUpMessage.mock.calls.at(-1)?.[0]?.prompt ?? "");
     expect(prompt).toContain("只问这一句。");
     expect(prompt).toContain("这里为什么这样说？");
-    expect(prompt).not.toContain("publish_companion_comment");
+    expect(prompt).toContain("read_shared_page_context");
+    expect(prompt).toContain("write_shared_page_clear_thoughts");
     expect(prompt).not.toContain("question-session");
     expect(prompt).not.toContain("上下文前句");
     await deviceCache.remove("question-session");

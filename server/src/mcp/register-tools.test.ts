@@ -12,6 +12,9 @@ describe("tool descriptors", () => {
     expect(TOOL_CONFIGS.read_shared_page_context.description).toMatch(
       /必须.*调用.*和_共读.*读取我保存的想法.*不要等待/s
     );
+    expect(TOOL_CONFIGS.read_shared_page_context.description).toContain(
+      "write_shared_page_clear_thoughts"
+    );
   });
 
   it("binds the UI resource only to the primary render tool", () => {
@@ -100,10 +103,18 @@ describe("tool descriptors", () => {
         return ui?.visibility === undefined || ui.visibility.includes("model");
       })
       .map(([name]) => name);
-    expect(modelVisibleTools).toEqual(["open_reading_nest", "read_shared_page_context"]);
+    expect(modelVisibleTools).toEqual([
+      "open_reading_nest",
+      "read_shared_page_context",
+      "write_shared_page_clear_thoughts"
+    ]);
 
     for (const [name, config] of Object.entries(TOOL_CONFIGS)) {
-      if (name === "open_reading_nest" || name === "read_shared_page_context") continue;
+      if (
+        name === "open_reading_nest" ||
+        name === "read_shared_page_context" ||
+        name === "write_shared_page_clear_thoughts"
+      ) continue;
       const meta = "_meta" in config ? (config._meta as Record<string, unknown>) : undefined;
       const ui = meta?.ui as { visibility?: readonly string[] } | undefined;
       expect(ui?.visibility, `${name} must stay hidden from the model`).toEqual(["app"]);
@@ -176,6 +187,7 @@ describe("tool descriptors", () => {
         position: { index: 2 },
         currentText: "第二页正文",
         savedThoughts: [{
+          quoteId: "quote-1",
           quote: "第二页划线",
           thought: "这是我的想法",
           clearThought: "这是想清楚之后留下的清思"
@@ -184,11 +196,62 @@ describe("tool descriptors", () => {
       responsePolicy: {
         doNotRepeatFullPage: true,
         doNotTranscribeThoughts: true,
-        style: "natural-conversation"
+        style: "natural-conversation",
+        writeBackTool: "write_shared_page_clear_thoughts",
+        writeBackRequired: true
       }
     });
     expect(result.content[0].text).toContain("不要复述正文");
     expect(TOOL_CONFIGS.read_shared_page_context).not.toHaveProperty("_meta.ui.resourceUri");
+  });
+
+  it("writes user-visible co-reading replies into the matching clear thoughts", async () => {
+    const handlers = new Map<string, (args: any) => Promise<any>>();
+    const saved: Array<{ sessionId: string; quoteId: string; clearThought: string }> = [];
+    const server = {
+      registerTool: (name: string, _config: unknown, handler: (args: any) => Promise<any>) => {
+        handlers.set(name, handler);
+      }
+    };
+    const service = {
+      getSessionBundle: async () => ({
+        session: { id: "shared-session" },
+        quotes: [{ id: "quote-1" }, { id: "quote-2" }],
+        reactions: [],
+        bookmarks: []
+      }),
+      updateQuoteNote: async (input: typeof saved[number]) => {
+        saved.push(input);
+        return { id: input.quoteId, sessionId: input.sessionId, clearThought: input.clearThought };
+      }
+    };
+
+    registerReadingTools(server as never, service as never);
+    const result = await handlers.get("write_shared_page_clear_thoughts")?.({
+      sessionId: "shared-session",
+      replies: [
+        { quoteId: "quote-1", clearThought: "第一条用户可见回复" },
+        { quoteId: "quote-2", clearThought: "第二条用户可见回复" }
+      ]
+    });
+
+    expect(saved).toEqual([
+      {
+        sessionId: "shared-session",
+        quoteId: "quote-1",
+        clearThought: "第一条用户可见回复"
+      },
+      {
+        sessionId: "shared-session",
+        quoteId: "quote-2",
+        clearThought: "第二条用户可见回复"
+      }
+    ]);
+    expect(result.structuredContent).toMatchObject({
+      saved: true,
+      sessionId: "shared-session",
+      quotes: [{ id: "quote-1" }, { id: "quote-2" }]
+    });
   });
 
   it("returns the component-only source endpoint for the rendered widget", async () => {
@@ -417,8 +480,8 @@ describe("tool descriptors", () => {
     });
   });
 
-  it("exposes the book-management tools and reaches twenty-six tools", () => {
-    expect(Object.keys(TOOL_CONFIGS)).toHaveLength(27);
+  it("exposes the book-management and clear-thought writeback tools", () => {
+    expect(Object.keys(TOOL_CONFIGS)).toHaveLength(28);
     expect(TOOL_CONFIGS.get_novel_bookshelf.annotations.readOnlyHint).toBe(true);
     expect(TOOL_CONFIGS.rename_reading_session.annotations).toMatchObject({
       readOnlyHint: false,

@@ -95,8 +95,8 @@ describe("buildReadingCommentPrompt", () => {
     expect(prompt).toMatch(/人物变化/);
     expect(prompt).toMatch(/伏笔猜测/);
     expect(prompt).toMatch(/当前感受/);
-    expect(prompt).toContain("直接在聊天区回复即可");
-    expect(prompt).toContain("不要调用任何应用写回工具");
+    expect(prompt).toContain("write_shared_page_clear_thoughts");
+    expect(prompt).toContain("用户可见的最终回复");
   });
 
   it("keeps diary summary separate from ordinary paragraph chat", () => {
@@ -121,7 +121,7 @@ describe("buildReadingCommentPrompt", () => {
 
     expect(prompt).toContain("补课已确认完成");
     expect(prompt).toContain("第 3-12 页");
-    expect(prompt).toContain("直接在聊天区回复即可");
+    expect(prompt).toContain("write_shared_page_clear_thoughts");
     expect(prompt).not.toMatch(/总结这段区间的剧情变化/);
   });
 });

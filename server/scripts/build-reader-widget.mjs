@@ -7,16 +7,18 @@ const scriptDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(scriptDir, "../..");
 const htmlPath = resolve(repoRoot, "web/dist/index.html");
 const generatedPath = resolve(repoRoot, "server/src/mcp/reader-widget.generated.ts");
+const pnpmEntrypoint = process.env.npm_execpath;
 
-execFileSync("corepack", ["pnpm", "--filter", "@ss/shared", "build"], {
-  cwd: repoRoot,
-  stdio: "inherit"
-});
+function runPnpm(args) {
+  execFileSync(
+    pnpmEntrypoint ? process.execPath : "pnpm",
+    pnpmEntrypoint ? [pnpmEntrypoint, ...args] : args,
+    { cwd: repoRoot, stdio: "inherit" }
+  );
+}
 
-execFileSync("corepack", ["pnpm", "--filter", "@ss/web", "build"], {
-  cwd: repoRoot,
-  stdio: "inherit"
-});
+runPnpm(["--filter", "@ss/shared", "build"]);
+runPnpm(["--filter", "@ss/web", "build"]);
 
 const html = readFileSync(htmlPath, "utf8");
 const generated = [
