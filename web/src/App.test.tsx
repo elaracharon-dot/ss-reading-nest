@@ -1823,6 +1823,53 @@ describe("App", () => {
     await deviceCache.remove("ipad-cloud-session");
   });
 
+  it("restores cloud text before reopening a reader saved in widget state", async () => {
+    const deviceCache = new IndexedDbReadingCache();
+    const sessionId = "widget-cloud-restore-session";
+    await deviceCache.remove(sessionId);
+    const sourceText = "恢复页一。\n\n恢复页二。\n\n恢复页三。";
+    const baseManifest = await createNovelSourceManifest({
+      sourceId: "widget-cloud-restore-source",
+      sourceKind: "pasted_text",
+      title: "组件恢复书",
+      sourceText
+    });
+    const cloudManifest = withCloudSync(baseManifest, "widget-cloud-restore-source");
+    const bundle = bookshelfBundle(sessionId, "组件恢复书", 3, "light_chat", cloudManifest);
+    const fetchMock = vi.fn(async () =>
+      jsonResponse({ sourceText, sourceManifest: cloudManifest })
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    Object.defineProperty(window, "openai", {
+      configurable: true,
+      value: {
+        toolOutput: {
+          bookshelfSessions: [bundle],
+          sourceEndpointBase: "/source/secret"
+        },
+        widgetState: {
+          screen: "novel",
+          sessionId,
+          positionIndex: 3,
+          scrollTop: 0
+        },
+        callTool: vi.fn(async () => ({ structuredContent: {} })),
+        requestDisplayMode: vi.fn(),
+        setWidgetState: vi.fn()
+      }
+    });
+
+    render(<App />);
+
+    expect(await screen.findByText("恢复页三。")).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/source/secret/restore",
+      expect.objectContaining({ method: "POST" })
+    );
+    expect(screen.queryByText(/正文缓存已丢失/)).not.toBeInTheDocument();
+    await deviceCache.remove(sessionId);
+  });
+
   it("uses the host-confirmed display mode across remounts", async () => {
     const deviceCache = new IndexedDbReadingCache();
     const sessionId = "reader-route-session";
