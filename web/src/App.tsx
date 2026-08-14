@@ -495,9 +495,39 @@ export function App() {
     }
     const storedLocal = await cache.get(item.session.id).catch(() => undefined);
     if (!requestIsCurrent()) return;
-    const local =
+    let local =
       storedLocal ??
       cloudRestoredSources.get(cloudRestoreKey(sourceEndpointBase, nextItem.session));
+    if (
+      !local &&
+      getSourceAvailability(nextItem.session.sourceManifest ?? null, null) === "available_cloud"
+    ) {
+      setSourceAvailability("restoring_from_cloud");
+      setToast("正在从私人云端恢复正文…");
+      try {
+        const restored = await restoreNovelFromCloudOnce(
+          cloudSourceClient,
+          sourceEndpointBase,
+          nextItem.session,
+          10_000
+        );
+        if (!requestIsCurrent()) return;
+        nextItem = {
+          ...nextItem,
+          session: restored.session,
+          sourceAvailability: restored.sourceAvailability
+        };
+        local = restored.localCache;
+        setRecent((items) =>
+          items.map((candidate) =>
+            candidate.session.id === nextItem.session.id ? nextItem : candidate
+          )
+        );
+      } catch {
+        if (!requestIsCurrent()) return;
+        setSourceAvailability("cloud_restore_failed");
+      }
+    }
     if (local && !nextItem.session.sourceManifest) {
       await callTool("set_source_manifest", {
         sessionId: nextItem.session.id,
