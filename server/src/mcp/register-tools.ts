@@ -39,6 +39,7 @@ import { toolResult } from "./tool-result.js";
 // previous connection can still fetch its template after a later app release.
 export const READING_NEST_URI = READING_NEST_RESOURCE_URI;
 export const READING_NEST_LEGACY_URIS = [
+  "ui://ss-reading-nest/app-v86-cloud-body-restore.html",
   "ui://ss-reading-nest/app-v85-neutral-naming.html",
   "ui://ss-reading-nest/app-v84-ios-result-binding.html",
   "ui://ss-reading-nest/app-v83-industrial-red.html",
@@ -149,20 +150,13 @@ export const TOOL_CONFIGS = {
   check_reading_nest_app_compatibility: {
     title: "检查信息库 App 兼容性",
     description:
-      "Use this only to verify whether the current ChatGPT client can render a minimal 信息库 App component. It does not read or modify any book data.",
+      "Internal app-only compatibility diagnostics. It does not read or modify any book data.",
     inputSchema: z.object({}),
     annotations: readOnly,
-    _meta: {
-      ui: {
-        resourceUri: READING_NEST_COMPATIBILITY_URI,
-        visibility: ["app"]
-      },
-      "openai/outputTemplate": READING_NEST_COMPATIBILITY_URI,
-      "openai/widgetAccessible": true,
-      "openai/visibility": "private",
-      "openai/toolInvocation/invoking": "正在检查 App 组件…",
-      "openai/toolInvocation/invoked": "App 组件检查已打开"
-    }
+    // Hidden tools cannot own UI templates in ChatGPT. Keeping this tool
+    // app-only without a resource binding avoids invalidating the primary
+    // open_reading_nest component registration.
+    _meta: appOnlyToolMeta
   },
   start_reading_session: {
     title: "开始共读",

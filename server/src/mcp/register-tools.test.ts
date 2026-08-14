@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   buildCurrentReadingContext,
-  READING_NEST_COMPATIBILITY_URI,
   READING_NEST_URI,
   registerReadingTools,
   TOOL_CONFIGS
@@ -85,9 +84,11 @@ describe("tool descriptors", () => {
       expect(TOOL_CONFIGS[name]._meta["openai/widgetAccessible"]).toBe(true);
     }
     expect(TOOL_CONFIGS.check_reading_nest_app_compatibility._meta?.ui).toEqual({
-      resourceUri: READING_NEST_COMPATIBILITY_URI,
       visibility: ["app"]
     });
+    expect(
+      TOOL_CONFIGS.check_reading_nest_app_compatibility._meta?.["openai/outputTemplate"]
+    ).toBeUndefined();
     expect(
       TOOL_CONFIGS.check_reading_nest_app_compatibility._meta?.["openai/visibility"]
     ).toBe("private");
