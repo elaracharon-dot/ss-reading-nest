@@ -151,33 +151,33 @@ html[data-display-mode="fullscreen"] .app {
 
 /* Monochrome neo-brutalist skin, based on the user's reference board. */
 .library-theme-brutal {
-  --cream: #e5e5e3;
-  --paper: #f1f1ef;
-  --surface: #dededc;
-  --sage: #d2d2cf;
-  --sage-strong: #3a3a38;
-  --wood: #2f2f2d;
-  --blue: #989896;
-  --blue-strong: #2f2f2d;
-  --blue-soft: #c9c9c6;
-  --blush: #d8d8d5;
-  --champagne: #6f6f6c;
+  --cream: #c5c9ce;
+  --paper: #e7e9ec;
+  --surface: #b9bec4;
+  --sage: #aeb4bb;
+  --sage-strong: #090a0b;
+  --wood: #050506;
+  --blue: #8d939a;
+  --blue-strong: #710f18;
+  --blue-soft: #aeb3b9;
+  --blush: #9da2a8;
+  --champagne: #710f18;
   --rose-shadow: #000;
-  --ink: #2b2b29;
-  --muted: #777774;
-  --line: #343432;
-  --danger: #2b2b29;
-  --accent-gradient: #2f2f2d;
+  --ink: #050506;
+  --muted: #4c5157;
+  --line: #050506;
+  --danger: #710f18;
+  --accent-gradient: #050506;
   --shadow-soft: none;
-  --shadow-float: 6px 6px 0 #2f2f2d;
-  --shadow-button: 3px 3px 0 #777774;
+  --shadow-float: 6px 6px 0 #050506;
+  --shadow-button: 3px 3px 0 #710f18;
 }
 .library-theme-brutal,
 .library-theme-brutal .library-app-shell,
 .library-theme-brutal .reader-shell,
 .library-theme-brutal .setup-shell,
 .library-theme-brutal .cover-shell {
-  background: #e5e5e3;
+  background: #c5c9ce;
   font-family: "Courier New", "Noto Sans Mono CJK SC", "PingFang SC", monospace;
 }
 .library-theme-brutal button,
@@ -197,12 +197,12 @@ html[data-display-mode="fullscreen"] .app {
 .library-theme-brutal .thoughts-card,
 .library-theme-brutal .quote-detail-card,
 .library-theme-brutal .toc-drawer {
-  border: 2px solid #343432;
+  border: 2px solid #050506;
   border-radius: 0;
   box-shadow: none;
 }
 .library-theme-brutal .library-header {
-  border-bottom: 6px solid #343432;
+  border-bottom: 6px solid #050506;
 }
 .library-theme-brutal .library-kicker,
 .library-theme-brutal .sheet-kicker,
@@ -223,12 +223,12 @@ html[data-display-mode="fullscreen"] .app {
   letter-spacing: -.045em;
 }
 .library-theme-brutal .library-rail {
-  border-right: 3px solid #343432;
-  background: #d1d1cf;
+  border-right: 3px solid #050506;
+  background: #adb2b8;
 }
 .library-theme-brutal .library-rail strong {
   padding-bottom: 18px;
-  border-bottom: 3px solid #343432;
+  border-bottom: 3px solid #710f18;
   font-family: "Courier New", monospace;
   text-transform: uppercase;
 }
@@ -238,9 +238,9 @@ html[data-display-mode="fullscreen"] .app {
 .library-theme-brutal .library-skin-switch button[aria-pressed="true"],
 .library-theme-brutal .record-tabs button[aria-pressed="true"],
 .library-theme-brutal .archive-tabs button[aria-selected="true"] {
-  border-color: #343432;
-  background: #2f2f2d;
-  color: #f1f1ef;
+  border-color: #050506;
+  background: #050506;
+  color: #e7e9ec;
   box-shadow: none;
 }
 .library-theme-brutal .library-skin-switch button,
@@ -253,7 +253,7 @@ html[data-display-mode="fullscreen"] .app {
 }
 .library-theme-brutal .library-skin-switch button::before {
   border-radius: 0;
-  border-color: #343432;
+  border-color: #050506;
   box-shadow: none;
 }
 .library-theme-brutal .continue-card::before,
@@ -263,45 +263,53 @@ html[data-display-mode="fullscreen"] .app {
   display: none;
 }
 .library-theme-brutal .library-cover {
-  background: #d2d2cf;
-  box-shadow: 5px 5px 0 #343432;
+  background: #b0b5bb;
+  box-shadow: 5px 5px 0 #050506;
 }
 .library-theme-brutal .library-book-card:hover .library-cover {
   transform: translate(-2px, -2px);
-  box-shadow: 8px 8px 0 #343432;
+  box-shadow: 8px 8px 0 #710f18;
 }
 .library-theme-brutal .continue-progress-track,
 .library-theme-brutal .record-progress i,
 .library-theme-brutal .records-bar {
   border-radius: 0;
 }
+.library-theme-brutal .continue-progress-track span,
+.library-theme-brutal .record-progress i b,
+.library-theme-brutal .records-bar,
+.library-theme-brutal .records-trend-dot,
+.library-theme-brutal .records-trend-star {
+  background: #710f18;
+  fill: #710f18;
+}
 .library-theme-brutal .action-primary,
 .library-theme-brutal .library-add {
-  border: 2px solid #2f2f2d;
-  background: #2f2f2d;
-  color: #f1f1ef;
-  box-shadow: 4px 4px 0 #888885;
+  border: 2px solid #050506;
+  background: #050506;
+  color: #e7e9ec;
+  box-shadow: 4px 4px 0 #710f18;
 }
 .library-theme-brutal .reader-header,
 .library-theme-brutal .reader-actions,
 .library-theme-brutal .sync-status {
-  border-color: #343432;
-  background: #d1d1cf;
+  border-color: #050506;
+  background: #adb2b8;
   box-shadow: none;
 }
 .library-theme-brutal .novel-paper {
   padding: clamp(22px, 5vw, 64px);
-  background: #f0f0ee;
+  background: #e7e9ec;
   line-height: 1.9;
 }
 .library-theme-brutal mark {
-  background: #2f2f2d;
-  color: #f1f1ef;
+  background: #710f18;
+  color: #ffffff;
 }
 
 @media (max-width: 699px) {
   .library-theme-brutal .library-header { border-bottom-width: 4px; }
-  .library-theme-brutal .library-cover { box-shadow: 4px 4px 0 #343432; }
+  .library-theme-brutal .library-cover { box-shadow: 4px 4px 0 #050506; }
   .library-theme-brutal .library-skin-switch {
     justify-content: flex-start;
     overflow-x: auto;
