@@ -82,13 +82,9 @@ export default {
         enableJsonResponse: true
       })(mcpRequest, env, ctx);
     } catch (error) {
-      console.error(
-        JSON.stringify({
-          message: "MCP request failed",
-          error: error instanceof Error ? error.message : String(error),
-          path: url.pathname
-        })
-      );
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      // Keep the private path token out of logs while preserving the useful exception text.
+      console.error(`MCP request failed: ${errorMessage}`);
       return Response.json(
         { jsonrpc: "2.0", id: null, error: { code: -32603, message: "Internal server error" } },
         { status: 500 }
