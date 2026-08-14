@@ -2208,16 +2208,15 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string)
   });
 }
 
-function readTextFile(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () =>
-      typeof reader.result === "string"
-        ? resolve(reader.result)
-        : reject(new Error("Text file did not decode as a string"));
-    reader.onerror = () => reject(reader.error ?? new Error("Text file read failed"));
-    reader.readAsText(file, "UTF-8");
-  });
+async function readTextFile(file: File): Promise<string> {
+  const bytes = await file.arrayBuffer();
+  try {
+    return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+  } catch {
+    // Older Chinese TXT exports commonly use GBK/GB18030. Decode locally in
+    // the browser so the source file never needs to leave the user's device.
+    return new TextDecoder("gb18030", { fatal: true }).decode(bytes);
+  }
 }
 
 function deriveSourceEndpointBase(): string {
