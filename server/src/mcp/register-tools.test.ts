@@ -275,9 +275,8 @@ describe("tool descriptors", () => {
       ]
     });
     expect(result._meta?.privateBookshelf).not.toHaveProperty("readingRecords");
-    expect(result._meta).not.toHaveProperty("ui");
-    expect(result._meta).not.toHaveProperty("ui/resourceUri");
-    expect(result._meta).not.toHaveProperty("openai/outputTemplate");
+    expect(result._meta?.ui).toEqual({ resourceUri: READING_NEST_URI });
+    expect(result._meta?.["openai/outputTemplate"]).toBe(READING_NEST_URI);
     expect(JSON.stringify(result)).not.toMatch(
       /sourceText|bytesBase64|data:image|objectKey|manifestObjectKey|private\/sources\//
     );
