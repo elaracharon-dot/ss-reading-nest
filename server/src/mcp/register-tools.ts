@@ -39,6 +39,7 @@ import { toolResult } from "./tool-result.js";
 // previous connection can still fetch its template after a later app release.
 export const READING_NEST_URI = READING_NEST_RESOURCE_URI;
 export const READING_NEST_LEGACY_URIS = [
+  "ui://ss-reading-nest/app-v83-industrial-red.html",
   "ui://ss-reading-nest/app-v78-context-fallback-remount.html",
   "ui://ss-reading-nest/app-v76-ios-remount.html",
   "ui://ss-reading-nest/app-v77-explicit-thought-delivery.html",
@@ -387,7 +388,14 @@ export function registerReadingTools(
         summarizeNovelBookshelfForModel(bookshelf.bookshelfSessions),
         "已打开信息库。完整书架只显示在阅读组件内。后续如果用户要求共读、讨论当前页或读取已保存的想法，必须立即调用 read_shared_page_context；不要等待阅读组件再次推送内容。"
       ),
-      _meta: { privateBookshelf: bookshelf }
+      // Keep the standards-based descriptor binding above, and mirror it on
+      // the result for native clients that decide whether to mount the app
+      // from the completed tool call envelope.
+      _meta: {
+        ui: { resourceUri: READING_NEST_URI },
+        "openai/outputTemplate": READING_NEST_URI,
+        privateBookshelf: bookshelf
+      }
     };
   });
 
